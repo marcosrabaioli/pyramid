@@ -2,19 +2,26 @@ from pyramid.response import Response
 from pyramid.view import view_config
 
 from sqlalchemy.exc import DBAPIError
+from sqlalchemy.ext.serializer import loads, dumps
 
-from ..models import MyModel
+from ..models import Quote
 
 
-@view_config(route_name='home', renderer='../templates/mytemplate.jinja2')
-def my_view(request):
+@view_config(route_name='quotes_list',  renderer='json')
+def quotes_list(request):
     try:
-        query = request.dbsession.query(MyModel)
-        one = query.filter(MyModel.name == 'one').first()
+        query = request.dbsession.query(Quote)
+        quotes = query.all()
+
+        list_quote = []
+
+        for quote in quotes:
+
+            list_quote.append(quote.quote)
+
     except DBAPIError:
         return Response(db_err_msg, content_type='text/plain', status=500)
-    return {'one': one, 'project': 'geru'}
-
+    return  {'quotes':  list_quote}
 
 db_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
