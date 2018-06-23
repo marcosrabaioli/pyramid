@@ -2,14 +2,17 @@ from pyramid.response import Response
 from pyramid.view import view_config
 
 from sqlalchemy.exc import DBAPIError
-from sqlalchemy.ext.serializer import loads, dumps
 
+from random import randint
 from ..models import Quote
 
+import uuid
 
 @view_config(route_name='quotes_list',  renderer='json')
 def quotes_list(request):
     try:
+
+        register_request(request)
         query = request.dbsession.query(Quote)
         quotes = query.all()
 
@@ -22,6 +25,44 @@ def quotes_list(request):
     except DBAPIError:
         return Response(db_err_msg, content_type='text/plain', status=500)
     return  {'quotes':  list_quote}
+
+
+@view_config(route_name='quote_detail',  renderer='json')
+def quotes_detail(request):
+    try:
+        pk = request.matchdict['pk']
+        query = request.dbsession.query(Quote)
+
+        if pk == 'random':
+            count_quotes = query.count()
+            random_number = randint(1, count_quotes)
+            quote = query.get(random_number)
+            return {'pk': random_number, 'quote': quote.quote}
+
+        quote = query.get(pk)
+
+        if quote is None:
+            return Response("Bad request!The parameter 'pk' is invalid.", content_type='text/plain', status=400)
+
+    except DBAPIError:
+        return Response(db_err_msg, content_type='text/plain', status=500)
+    return {'quote':  quote.quote}
+
+
+def register_request(request):
+
+    session = request.session
+
+    if 'userid' in session:
+        print(session['userid'])
+    else:
+        create_userid(session)
+
+def create_userid(session):
+
+    userid = str(uuid.uuid4())
+
+    session['userid'] = userid
 
 db_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem

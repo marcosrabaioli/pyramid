@@ -1,6 +1,5 @@
 from sqlalchemy import (
     Column,
-    Index,
     Integer,
     Text,
 )
@@ -12,3 +11,5 @@ class Quote(Base):
     __tablename__ = 'quote'
     id = Column(Integer, primary_key=True)
     quote = Column(Text)
+
+
