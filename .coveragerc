@@ -1,0 +1,3 @@
+[run]
+source = geru
+omit = geru/test*
