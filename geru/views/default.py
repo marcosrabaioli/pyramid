@@ -5,6 +5,9 @@ from sqlalchemy.exc import DBAPIError
 
 from random import randint
 from ..models import Quote
+from ..models import RequestLog
+
+from datetime import datetime
 
 import uuid
 
@@ -24,12 +27,13 @@ def quotes_list(request):
 
     except DBAPIError:
         return Response(db_err_msg, content_type='text/plain', status=500)
-    return  {'quotes':  list_quote}
+    return {'quotes':  list_quote}
 
 
 @view_config(route_name='quote_detail',  renderer='json')
 def quotes_detail(request):
     try:
+        register_request(request)
         pk = request.matchdict['pk']
         query = request.dbsession.query(Quote)
 
@@ -54,9 +58,23 @@ def register_request(request):
     session = request.session
 
     if 'userid' in session:
-        print(session['userid'])
+        log_request(request)
     else:
         create_userid(session)
+        log_request(request)
+
+def log_request(request):
+
+    session_id = request.session['userid']
+
+    url = request.path
+
+    timestamp = datetime.now()
+
+    request_log = RequestLog(sessionId=session_id, request=url, timestamp=timestamp)
+
+    request.dbsession.add(request_log)
+
 
 def create_userid(session):
 

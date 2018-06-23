@@ -5,7 +5,7 @@ SECRET = generate_secret(as_hex=False)
 
 def includeme(config):
 
-    factory = EncryptedCookieSessionFactory(SECRET)
+    factory = EncryptedCookieSessionFactory(SECRET, timeout=None)
     config.set_session_factory(factory)
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('quotes_list', '/quotes')

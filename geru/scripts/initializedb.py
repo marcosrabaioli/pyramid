@@ -16,6 +16,7 @@ from ..models import (
     get_tm_session,
     )
 from ..models import Quote
+from ..models import RequestLog
 
 
 def usage(argv):
