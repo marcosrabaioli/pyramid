@@ -11,6 +11,7 @@ from datetime import datetime
 
 import uuid
 
+
 @view_config(route_name='quotes_list',  renderer='json')
 def quotes_list(request):
     try:
@@ -64,7 +65,7 @@ def log_requests_list(request):
 
         for log in logs:
 
-            list_logs.append({'sessionId' : log.sessionId,
+            list_logs.append({'sessionId': log.sessionId,
                               'request': log.request,
                               'timestamp': log.timestamp.strftime("%Y-%m-%d %H:%M:%S")
                               })
@@ -82,6 +83,7 @@ def register_request(request):
     else:
         create_userid(session)
         log_request(request)
+
 
 def log_request(request):
 
@@ -101,6 +103,7 @@ def create_userid(session):
     userid = str(uuid.uuid4())
 
     session['userid'] = userid
+
 
 db_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem

@@ -3,6 +3,9 @@ import transaction
 
 from pyramid import testing
 
+import uuid
+
+from datetime import datetime
 
 def dummy_request(dbsession):
     return testing.DummyRequest(dbsession=dbsession)
@@ -138,3 +141,25 @@ class TestRequestLog(BaseTest):
         self.assertEqual(log.sessionId, session_id)
         self.assertEqual(log.request, request.path)
 
+
+class TestRequestLogList(BaseTest):
+
+    session_id = str(uuid.uuid4())
+    request = '/test'
+    date = datetime.now()
+
+    def setUp(self):
+        super(TestRequestLogList, self).setUp()
+        self.init_database()
+
+        from .models import RequestLog
+
+        quote = RequestLog(sessionId = self.session_id, request=self.request, timestamp=self.date)
+        self.session.add(quote)
+
+    def teste_log_request_list_success(self):
+
+        from .views.default import log_requests_list
+        info = log_requests_list(dummy_request(self.session))
+        log = info['requests'][0]
+        self.assertEqual(log['sessionId'], self.session_id)
