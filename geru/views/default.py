@@ -12,6 +12,12 @@ from datetime import datetime
 import uuid
 
 
+@view_config(route_name='home', renderer='templates/home.jinja2')
+def home(request):
+    register_request(request)
+    return {"title": "Web Challenge 1.0"}
+
+
 @view_config(route_name='quotes_list',  renderer='json')
 def quotes_list(request):
     try:

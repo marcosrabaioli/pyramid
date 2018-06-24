@@ -11,3 +11,4 @@ def includeme(config):
     config.add_route('quotes_list', '/quotes')
     config.add_route('quote_detail', '/quote/{pk}')
     config.add_route('log_requests_list', '/requests')
+    config.add_route('home', '/')
