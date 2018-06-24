@@ -23,7 +23,7 @@ class QuotesWrapper(object):
     @staticmethod
     def get_quote(number):
 
-        url_quotes = url + 'quotes/' + number
+        url_quotes = url + 'quotes/' + str(number)
         response = requests.get(url_quotes)
         data = response.json()
         status = response.status_code

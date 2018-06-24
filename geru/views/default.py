@@ -26,10 +26,8 @@ def quotes_list(request):
 
         status, data = QuotesWrapper.get_quotes()
         register_request(request)
-        if status == 200:
-            return data
-        else:
-            return Response(json.dumps(data), content_type='application/json', status=status, charset='UTF-8')
+
+        return Response(json.dumps(data), content_type='application/json', status=status, charset='UTF-8')
     except DBAPIError:
         return Response(json.dumps({'error': db_err_msg}), content_type='application/json', status=500, charset='UTF-8')
 
@@ -42,18 +40,10 @@ def quotes_detail(request):
 
         if pk == 'random':
             status, data = QuotesWrapper.get_quote_random()
-
-            if status == 200:
-                return data
-            else:
-                return Response(json.dumps(data), content_type='application/json', status=status, charset='UTF-8')
+            return Response(json.dumps(data), content_type='application/json', status=status, charset='UTF-8')
 
         status, data = QuotesWrapper.get_quote(pk)
-
-        if status == 200:
-            return data
-        else:
-            return Response(json.dumps(data), content_type='application/json', status=status, charset='UTF-8')
+        return Response(json.dumps(data), content_type='application/json', status=status, charset='UTF-8')
 
     except DBAPIError:
         return Response(json.dumps({'error': db_err_msg}), content_type='application/json', status=500, charset='UTF-8')
@@ -77,7 +67,7 @@ def log_requests_list(request):
 
     except DBAPIError:
         return Response(json.dumps({'error': db_err_msg}), content_type='application/json', status=500, charset='UTF-8')
-    return {'requests':  list_logs}
+    return Response(json.dumps({'requests':  list_logs}), content_type='application/json', status=200, charset='UTF-8')
 
 
 def register_request(request):
