@@ -12,8 +12,8 @@ from .meta import Base
 class RequestLog(Base):
     __tablename__ = 'request_log'
     id = Column(Integer, primary_key=True)
-    sessionId = Column(Text)
+    session_id = Column(Text)
     request = Column(Text)
     timestamp = Column(DateTime)
 
-Index('session_index', RequestLog.sessionId)
+Index('session_index', RequestLog.session_id)

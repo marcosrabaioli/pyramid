@@ -3,6 +3,7 @@ from pyramid_nacl_session import EncryptedCookieSessionFactory
 
 SECRET = generate_secret(as_hex=False)
 
+
 def includeme(config):
 
     factory = EncryptedCookieSessionFactory(SECRET, timeout=None)

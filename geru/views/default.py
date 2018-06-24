@@ -11,6 +11,7 @@ from datetime import datetime
 
 import uuid
 
+from ..wrapper.quotes_wrapper import QuotesWrapper
 
 @view_config(route_name='home', renderer='templates/home.jinja2')
 def home(request):
@@ -18,49 +19,48 @@ def home(request):
     return {"title": "Web Challenge 1.0"}
 
 
-@view_config(route_name='quotes_list',  renderer='json')
+@view_config(route_name='quotes_list',  renderer='json', request_method="GET")
 def quotes_list(request):
     try:
-
+        wrapper = QuotesWrapper()
+        status, data = wrapper.get_quotes()
         register_request(request)
-        query = request.dbsession.query(Quote)
-        quotes = query.all()
-
-        list_quote = []
-
-        for quote in quotes:
-
-            list_quote.append(quote.quote)
-
+        if status == 200:
+            return data
     except DBAPIError:
-        return Response(db_err_msg, content_type='text/plain', status=500)
-    return {'quotes':  list_quote}
+        return Response('Internal server error!', content_type='text/plain', status=500)
+
+    return Response(data['message'], content_type='text/plain', status=status)
 
 
-@view_config(route_name='quote_detail',  renderer='json')
+@view_config(route_name='quote_detail',  renderer='json', request_method="GET")
 def quotes_detail(request):
     try:
         register_request(request)
         pk = request.matchdict['pk']
-        query = request.dbsession.query(Quote)
+        wrapper = QuotesWrapper()
 
         if pk == 'random':
-            count_quotes = query.count()
-            random_number = randint(1, count_quotes)
-            quote = query.get(random_number)
-            return {'pk': random_number, 'quote': quote.quote}
+            status, data = wrapper.get_quote_random()
 
-        quote = query.get(pk)
+            if status == 200:
+                return data
+            else:
+                return Response(data['message'], content_type='text/plain', status=status)
 
-        if quote is None:
-            return Response("Bad request!The parameter 'pk' is invalid.", content_type='text/plain', status=400)
+        status, data = wrapper.get_quote(pk)
 
-    except DBAPIError:
-        return Response(db_err_msg, content_type='text/plain', status=500)
-    return {'quote':  quote.quote}
+        if status == 200:
+            return data
+        else:
+            return Response(data['message'], content_type='text/plain', status=status)
+
+    except Exception:
+        return Response('Internal server error!', content_type='text/plain', status=500)
 
 
-@view_config(route_name='log_requests_list',  renderer='json')
+
+@view_config(route_name='log_requests_list',  renderer='json', request_method="GET")
 def log_requests_list(request):
     try:
         register_request(request)
@@ -71,7 +71,7 @@ def log_requests_list(request):
 
         for log in logs:
 
-            list_logs.append({'sessionId': log.sessionId,
+            list_logs.append({'sessionId': log.session_id,
                               'request': log.request,
                               'timestamp': log.timestamp.strftime("%Y-%m-%d %H:%M:%S")
                               })
@@ -79,6 +79,7 @@ def log_requests_list(request):
     except DBAPIError:
         return Response(db_err_msg, content_type='text/plain', status=500)
     return {'requests':  list_logs}
+
 
 def register_request(request):
 
@@ -99,7 +100,7 @@ def log_request(request):
 
     timestamp = datetime.now()
 
-    request_log = RequestLog(sessionId=session_id, request=url, timestamp=timestamp)
+    request_log = RequestLog(session_id=session_id, request=url, timestamp=timestamp)
 
     request.dbsession.add(request_log)
 

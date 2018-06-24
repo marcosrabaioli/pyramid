@@ -1,5 +1,4 @@
 from pyramid.config import Configurator
-from pyramid.session import SignedCookieSessionFactory
 
 
 def main(global_config, **settings):

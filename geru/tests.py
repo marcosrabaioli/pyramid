@@ -7,6 +7,7 @@ import uuid
 
 from datetime import datetime
 
+
 def dummy_request(dbsession):
     return testing.DummyRequest(dbsession=dbsession)
 
@@ -120,9 +121,9 @@ class TestRequestLog(BaseTest):
 
         query = request.dbsession.query(RequestLog)
 
-        log = query.filter(RequestLog.sessionId == session_id).first()
+        log = query.filter(RequestLog.session_id == session_id).first()
 
-        self.assertEqual(log.sessionId, session_id)
+        self.assertEqual(log.session_id, session_id)
         self.assertEqual(log.request, request.path)
 
     def test_request_log_for_quote_detail(self):
@@ -136,9 +137,9 @@ class TestRequestLog(BaseTest):
 
         query = request.dbsession.query(RequestLog)
 
-        log = query.filter(RequestLog.sessionId == session_id).first()
+        log = query.filter(RequestLog.session_id == session_id).first()
 
-        self.assertEqual(log.sessionId, session_id)
+        self.assertEqual(log.session_id, session_id)
         self.assertEqual(log.request, request.path)
 
 
@@ -154,7 +155,7 @@ class TestRequestLogList(BaseTest):
 
         from .models import RequestLog
 
-        quote = RequestLog(sessionId = self.session_id, request=self.request, timestamp=self.date)
+        quote = RequestLog(session_id = self.session_id, request=self.request, timestamp=self.date)
         self.session.add(quote)
 
     def teste_log_request_list_success(self):
