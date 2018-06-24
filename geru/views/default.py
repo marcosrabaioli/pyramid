@@ -53,6 +53,26 @@ def quotes_detail(request):
     return {'quote':  quote.quote}
 
 
+@view_config(route_name='log_requests_list',  renderer='json')
+def log_requests_list(request):
+    try:
+        register_request(request)
+        query = request.dbsession.query(RequestLog)
+        logs = query.all()
+
+        list_logs = []
+
+        for log in logs:
+
+            list_logs.append({'sessionId' : log.sessionId,
+                              'request': log.request,
+                              'timestamp': log.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+                              })
+
+    except DBAPIError:
+        return Response(db_err_msg, content_type='text/plain', status=500)
+    return {'requests':  list_logs}
+
 def register_request(request):
 
     session = request.session
