@@ -11,7 +11,8 @@ url = config.get('quotes_api','url')
 
 class QuotesWrapper(object):
 
-    def get_quotes(self):
+    @staticmethod
+    def get_quotes():
 
         url_quotes = url + 'quotes'
         response = requests.get(url_quotes)
@@ -19,7 +20,8 @@ class QuotesWrapper(object):
         status = response.status_code
         return status, data
 
-    def get_quote(self, number):
+    @staticmethod
+    def get_quote(number):
 
         url_quotes = url + 'quotes/' + number
         response = requests.get(url_quotes)
@@ -27,13 +29,14 @@ class QuotesWrapper(object):
         status = response.status_code
         return status, data
 
-    def get_quote_random(self):
+    @staticmethod
+    def get_quote_random():
 
-        status, data = self.get_quotes()
+        status, data = QuotesWrapper.get_quotes()
 
         if status == 200:
             count_quotes = len(data['quotes'])
-            random_number = randint(1, count_quotes)
+            random_number = randint(0, count_quotes)
             return status, {'pk': random_number, 'quote': data['quotes'][random_number]}
         else:
             return status, data

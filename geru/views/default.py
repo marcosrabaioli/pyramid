@@ -3,15 +3,16 @@ from pyramid.view import view_config
 
 from sqlalchemy.exc import DBAPIError
 
-from random import randint
-from ..models import Quote
 from ..models import RequestLog
 
 from datetime import datetime
 
 import uuid
 
+import json
+
 from ..wrapper.quotes_wrapper import QuotesWrapper
+
 
 @view_config(route_name='home', renderer='templates/home.jinja2')
 def home(request):
@@ -22,15 +23,15 @@ def home(request):
 @view_config(route_name='quotes_list',  renderer='json', request_method="GET")
 def quotes_list(request):
     try:
-        wrapper = QuotesWrapper()
-        status, data = wrapper.get_quotes()
+
+        status, data = QuotesWrapper.get_quotes()
         register_request(request)
         if status == 200:
             return data
+        else:
+            return Response(json.dumps(data), content_type='application/json', status=status, charset='UTF-8')
     except DBAPIError:
-        return Response('Internal server error!', content_type='text/plain', status=500)
-
-    return Response(data['message'], content_type='text/plain', status=status)
+        return Response(json.dumps({'error': db_err_msg}), content_type='application/json', status=500, charset='UTF-8')
 
 
 @view_config(route_name='quote_detail',  renderer='json', request_method="GET")
@@ -38,26 +39,24 @@ def quotes_detail(request):
     try:
         register_request(request)
         pk = request.matchdict['pk']
-        wrapper = QuotesWrapper()
 
         if pk == 'random':
-            status, data = wrapper.get_quote_random()
+            status, data = QuotesWrapper.get_quote_random()
 
             if status == 200:
                 return data
             else:
-                return Response(data['message'], content_type='text/plain', status=status)
+                return Response(json.dumps(data), content_type='application/json', status=status, charset='UTF-8')
 
-        status, data = wrapper.get_quote(pk)
+        status, data = QuotesWrapper.get_quote(pk)
 
         if status == 200:
             return data
         else:
-            return Response(data['message'], content_type='text/plain', status=status)
+            return Response(json.dumps(data), content_type='application/json', status=status, charset='UTF-8')
 
-    except Exception:
-        return Response('Internal server error!', content_type='text/plain', status=500)
-
+    except DBAPIError:
+        return Response(json.dumps({'error': db_err_msg}), content_type='application/json', status=500, charset='UTF-8')
 
 
 @view_config(route_name='log_requests_list',  renderer='json', request_method="GET")
@@ -77,19 +76,22 @@ def log_requests_list(request):
                               })
 
     except DBAPIError:
-        return Response(db_err_msg, content_type='text/plain', status=500)
+        return Response(json.dumps({'error': db_err_msg}), content_type='application/json', status=500, charset='UTF-8')
     return {'requests':  list_logs}
 
 
 def register_request(request):
+    try:
+        session = request.session
 
-    session = request.session
+        if 'userid' in session:
+            log_request(request)
+        else:
+            create_userid(session)
+            log_request(request)
 
-    if 'userid' in session:
-        log_request(request)
-    else:
-        create_userid(session)
-        log_request(request)
+    except DBAPIError as e:
+        raise e
 
 
 def log_request(request):
