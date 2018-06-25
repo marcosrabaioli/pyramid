@@ -27,21 +27,29 @@ Instruções Básicas
 Estrutura do projeto
 ---------------
 .
+
 ├── geru
+
 │   ├── models
+
 │   ├── scripts
+
 │   ├── static
+
 │   ├── templates
+
 │   ├── views
+
 │   └── wrapper
+
 └── geru.egg-info
 
-- ** models**: Classes dos modelos que são utilizados no banco de dados
-- ** scripts**: Sripts de inicialização do banco de dados
+- **models**: Classes dos modelos que são utilizados no banco de dados
+- **scripts**: Sripts de inicialização do banco de dados
 - **static**: arquivos estáticos da aplicação
-- ** templates**: contém os temlates .jinja2 das páginas da aplicação
+- **templates**: contém os temlates .jinja2 das páginas da aplicação
 - **views**: contém todas as views da aplicação
-- ** wrapper**: diretório que contém os arquivos da aplicação que consome a api de quotes
+- **wrapper**: diretório que contém os arquivos da aplicação que consome a api de quotes
 - **geru.egg-info**: informações do projeto como requirements e etc
 
 Frameworks Utilizados
@@ -56,9 +64,9 @@ End Points
 ---------------
 - **/** -> home
 - get **/quotes** -> lista todas as quotes
-- get** /quotes/{pk}** -> lista determinado quote
+- get **/quotes/{pk}** -> lista determinado quote
 - get **/quotes/random** -> lista um quote aleatório
-- get** /requests** -> lista todas as requisições feitas
+- get **/requests** -> lista todas as requisições feitas
 
 Mecanismo de registro de seção
 ---------------
