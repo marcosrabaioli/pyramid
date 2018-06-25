@@ -63,10 +63,15 @@ Frameworks Utilizados
 End Points
 ---------------
 - **/** -> home
+
 - get **/quotes** -> lista todas as quotes
+
 - get **/quotes/{pk}** -> lista determinado quote
+
 - get **/quotes/random** -> lista um quote aleatório
+
 - get **/requests** -> lista todas as requisições feitas
+
 
 Mecanismo de registro de seção
 ---------------
